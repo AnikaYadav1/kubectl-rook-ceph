@@ -175,7 +175,7 @@ func TestPrintCheckResultWithItems(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, true)
+		PrintCheckResult(result, true)
 	})
 
 	assert.Contains(t, output, "[OK]")
@@ -196,7 +196,7 @@ func TestPrintCheckResultItemWithoutNode(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, true)
+		PrintCheckResult(result, true)
 	})
 
 	assert.Contains(t, output, "resource-1 (Pending)")
@@ -212,7 +212,7 @@ func TestPrintCheckResultWithDetails(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, true)
+		PrintCheckResult(result, true)
 	})
 
 	assert.Contains(t, output, "Details:")
@@ -322,7 +322,7 @@ func TestPrintCheckResultVerboseFalseHidesItems(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, false)
+		PrintCheckResult(result, false)
 	})
 
 	assert.Contains(t, output, "Mon Distribution")
@@ -343,7 +343,7 @@ func TestPrintCheckResultVerboseTrueShowsItems(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, true)
+		PrintCheckResult(result, true)
 	})
 
 	assert.Contains(t, output, "Items:")
@@ -549,7 +549,7 @@ func TestPrintCheckResultItemWithDetails(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, true)
+		PrintCheckResult(result, true)
 	})
 
 	assert.Contains(t, output, "Items:")
@@ -568,7 +568,7 @@ func TestPrintCheckResultItemWithDetailsHiddenInNonVerbose(t *testing.T) {
 	}
 
 	output := captureOutput(t, func() {
-		printCheckResult(result, false)
+		PrintCheckResult(result, false)
 	})
 
 	assert.Contains(t, output, "Network MTU Config")

@@ -55,15 +55,15 @@ func TestWorseStatus(t *testing.T) {
 
 func TestCheckCephClusterHealth(t *testing.T) {
 	t.Run("HEALTH_OK no details", func(t *testing.T) {
-		status := cephStatus{Health: healthStatus{Status: "HEALTH_OK"}}
-		result := checkCephClusterHealth(status, nil)
+		status := CephStatus{Health: healthStatus{Status: "HEALTH_OK"}}
+		result := CheckCephClusterHealth(status, nil)
 		assert.Equal(t, StatusOK, result.Status)
 		assert.Equal(t, "HEALTH_OK", result.Message)
 		assert.Empty(t, result.Details)
 	})
 
 	t.Run("HEALTH_WARN with checks", func(t *testing.T) {
-		status := cephStatus{Health: healthStatus{
+		status := CephStatus{Health: healthStatus{
 			Status: "HEALTH_WARN",
 			Checks: map[string]healthCheckEntry{
 				"TOO_FEW_OSDS": {
@@ -72,7 +72,7 @@ func TestCheckCephClusterHealth(t *testing.T) {
 				},
 			},
 		}}
-		result := checkCephClusterHealth(status, nil)
+		result := CheckCephClusterHealth(status, nil)
 		assert.Equal(t, StatusWarning, result.Status)
 		assert.Len(t, result.Details, 1)
 		assert.Contains(t, result.Details[0], "[WARN]")
@@ -81,7 +81,7 @@ func TestCheckCephClusterHealth(t *testing.T) {
 	})
 
 	t.Run("HEALTH_ERR with checks", func(t *testing.T) {
-		status := cephStatus{Health: healthStatus{
+		status := CephStatus{Health: healthStatus{
 			Status: "HEALTH_ERR",
 			Checks: map[string]healthCheckEntry{
 				"OSD_DOWN": {
@@ -94,7 +94,7 @@ func TestCheckCephClusterHealth(t *testing.T) {
 				},
 			},
 		}}
-		result := checkCephClusterHealth(status, nil)
+		result := CheckCephClusterHealth(status, nil)
 		assert.Equal(t, StatusCritical, result.Status)
 		assert.Len(t, result.Details, 2)
 
@@ -104,7 +104,7 @@ func TestCheckCephClusterHealth(t *testing.T) {
 	})
 
 	t.Run("error fetching status", func(t *testing.T) {
-		result := checkCephClusterHealth(cephStatus{}, fmt.Errorf("connection refused"))
+		result := CheckCephClusterHealth(CephStatus{}, fmt.Errorf("connection refused"))
 		assert.Equal(t, StatusError, result.Status)
 		assert.Contains(t, result.Message, "connection refused")
 	})

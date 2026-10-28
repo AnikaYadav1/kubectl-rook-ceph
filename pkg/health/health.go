@@ -31,7 +31,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-type cephStatus struct {
+type CephStatus struct {
 	PgMap       pgMap        `json:"pgmap"`
 	Health      healthStatus `json:"health"`
 	QuorumNames []string     `json:"quorum_names"`
@@ -75,7 +75,7 @@ func Health(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespa
 	var results []CheckResult
 
 	logging.Plain("Checking Ceph status...")
-	cephStatus, cephStatusErr := unMarshalCephStatus(ctx, clientsets, operatorNamespace, clusterNamespace)
+	cephStatus, cephStatusErr := UnMarshalCephStatus(ctx, clientsets, operatorNamespace, clusterNamespace)
 
 	checks := []struct {
 		name string
@@ -84,8 +84,8 @@ func Health(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespa
 		{CheckMonDistribution, func() CheckResult {
 			return checkMonDistribution(ctx, clientsets.Kube, clusterNamespace, cephStatus, cephStatusErr)
 		}},
-		{CheckCephClusterHealth, func() CheckResult {
-			return checkCephClusterHealth(cephStatus, cephStatusErr)
+		{CheckCephClusterHealthName, func() CheckResult {
+			return CheckCephClusterHealth(cephStatus, cephStatusErr)
 		}},
 		{CheckOSDDistribution, func() CheckResult {
 			return checkOSDDistribution(ctx, clientsets.Kube, clusterNamespace)
@@ -129,7 +129,7 @@ func Health(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespa
 	formatReport(clusterNamespace, results, outputFormat, verbose)
 }
 
-func checkMonDistribution(ctx context.Context, k8sclientset kubernetes.Interface, clusterNamespace string, status cephStatus, statusErr error) CheckResult {
+func checkMonDistribution(ctx context.Context, k8sclientset kubernetes.Interface, clusterNamespace string, status CephStatus, statusErr error) CheckResult {
 	result := checkPodsOnNodes(ctx, k8sclientset, clusterNamespace, "app=rook-ceph-mon", CheckMonDistribution, "mon")
 
 	if statusErr != nil {
@@ -203,9 +203,9 @@ func checkPodsOnNodes(ctx context.Context, k8sclientset kubernetes.Interface, cl
 	return result
 }
 
-func checkCephClusterHealth(status cephStatus, statusErr error) CheckResult {
+func CheckCephClusterHealth(status CephStatus, statusErr error) CheckResult {
 	result := CheckResult{
-		Name:     CheckCephClusterHealth,
+		Name:     CheckCephClusterHealthName,
 		Category: CategoryStorage,
 	}
 
@@ -307,7 +307,7 @@ func getPodRunningStatus(ctx context.Context, k8sclientset kubernetes.Interface,
 	return podRunning, podNotRunning, nil
 }
 
-func checkPGStatus(status cephStatus, statusErr error) CheckResult {
+func checkPGStatus(status CephStatus, statusErr error) CheckResult {
 	result := CheckResult{
 		Name:     CheckPGStatus,
 		Category: CategoryStorage,
@@ -444,16 +444,16 @@ func isHealthyPGState(state string) bool {
 	return healthyPGStates[state]
 }
 
-func unMarshalCephStatus(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespace, clusterNamespace string) (cephStatus, error) {
+func UnMarshalCephStatus(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespace, clusterNamespace string) (CephStatus, error) {
 	cephStatusOut, err := exec.RunCommandInOperatorPod(ctx, clientsets, "ceph", []string{"-s", "--format", "json"}, operatorNamespace, clusterNamespace, true)
 	if err != nil {
-		return cephStatus{}, fmt.Errorf("failed to get ceph status: %v", err)
+		return CephStatus{}, fmt.Errorf("failed to get ceph status: %v", err)
 	}
 
-	var status cephStatus
+	var status CephStatus
 	err = json.Unmarshal([]byte(cephStatusOut), &status)
 	if err != nil {
-		return cephStatus{}, fmt.Errorf("failed to unmarshal ceph status: %v", err)
+		return CephStatus{}, fmt.Errorf("failed to unmarshal ceph status: %v", err)
 	}
 	return status, nil
 }

@@ -61,7 +61,7 @@ var capacityHealthChecks = map[string]bool{
 	"POOL_FULL":         true,
 }
 
-func checkClusterCapacity(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespace, clusterNamespace string, status cephStatus, statusErr error) CheckResult {
+func checkClusterCapacity(ctx context.Context, clientsets *k8sutil.Clientsets, operatorNamespace, clusterNamespace string, status CephStatus, statusErr error) CheckResult {
 	result := CheckResult{
 		Name:     CheckClusterCapacity,
 		Category: CategoryStorage,

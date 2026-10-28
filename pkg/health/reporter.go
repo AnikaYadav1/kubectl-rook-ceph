@@ -101,11 +101,11 @@ func printCategory(name string, results []CheckResult, verbose bool) {
 	logging.Plain("%s", separator())
 
 	for _, r := range results {
-		printCheckResult(r, verbose)
+		PrintCheckResult(r, verbose)
 	}
 }
 
-func printCheckResult(r CheckResult, verbose bool) {
+func PrintCheckResult(r CheckResult, verbose bool) {
 	colorFn := statusColor(r.Status)
 	icon := colorFn(statusIcon(r.Status))
 	label := colorFn(statusLabel(r.Status))

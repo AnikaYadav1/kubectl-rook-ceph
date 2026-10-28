@@ -87,7 +87,7 @@ const (
 	CategoryObjectStorage = "Object Storage"
 
 	CheckMonDistribution      = "Mon Distribution"
-	CheckCephClusterHealth    = "Ceph Cluster Health"
+	CheckCephClusterHealthName = "Ceph Cluster Health"
 	CheckOSDDistribution      = "OSD Distribution"
 	CheckAllPodsStatus        = "Pods Status"
 	CheckPGStatus             = "PG Status"
